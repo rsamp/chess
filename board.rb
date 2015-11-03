@@ -11,30 +11,30 @@ class Board
 
   def populate
     # Populate top row (back row for black side)
-    @grid[0] = [Piece.new(:rook, :black, [0,0], self),
-                Piece.new(:knight, :black, [0,1], self),
-                Piece.new(:bishop, :black, [0,2], self),
-                Piece.new(:queen, :black, [0,3], self),
-                Piece.new(:king, :black, [0,4], self),
-                Piece.new(:bishop, :black, [0,5], self),
-                Piece.new(:knight, :black, [0,6], self),
-                Piece.new(:rook, :black, [0,7], self)]
+    @grid[0] = [Rook.new(:rook, :black, [0,0], self),
+                Knight.new(:knight, :black, [0,1], self),
+                Bishop.new(:bishop, :black, [0,2], self),
+                Queen.new(:queen, :black, [0,3], self),
+                King.new(:king, :black, [0,4], self),
+                Bishop.new(:bishop, :black, [0,5], self),
+                Knight.new(:knight, :black, [0,6], self),
+                Rook.new(:rook, :black, [0,7], self)]
 
     # Populate rows of Pawns
     0.upto(7) do |i|
-      @grid[1].map! {|square| square = Piece.new(:pawn, :black, [1, i], self) }
-      @grid[6].map! {|square| square = Piece.new(:pawn, :white, [6, i], self) }
+      @grid[1].map! {|square| square = Pawn.new(:pawn, :black, [1, i], self) }
+      @grid[6].map! {|square| square = Pawn.new(:pawn, :white, [6, i], self) }
     end
 
     # Populate bottom row (back row for white side)
-    @grid[7] = [Piece.new(:rook, :white, [7,0], self),
-                Piece.new(:knight, :white, [7,1], self),
-                Piece.new(:bishop, :white, [7,2], self),
-                Piece.new(:queen, :white, [7,3], self),
-                Piece.new(:king, :white, [7,4], self),
-                Piece.new(:bishop, :white, [7,5], self),
-                Piece.new(:knight, :white, [7,6], self),
-                Piece.new(:rook, :white, [7,7], self)]
+    @grid[7] = [Rook.new(:rook, :white, [7,0], self),
+                Knight.new(:knight, :white, [7,1], self),
+                Bishop.new(:bishop, :white, [7,2], self),
+                Queen.new(:queen, :white, [7,3], self),
+                King.new(:king, :white, [7,4], self),
+                Bishop.new(:bishop, :white, [7,5], self),
+                Knight.new(:knight, :white, [7,6], self),
+                Rook.new(:rook, :white, [7,7], self)]
   end
 
   def move(start, end_pos)
@@ -51,13 +51,14 @@ class Board
     @grid[conv_end[0]][conv_end[1]] = temp_piece
   end
 
-  # def [](pos)
-  #   @grid[pos[0]][pos[1]]
-  # end
-  #
-  # def []=(pos, piece)
-  #   @grid[pos[0]][pos[1]] = piece
-  # end
+  def [](pos)
+    x, y = pos
+    @grid[x][y]
+  end
+
+  def []=(pos, piece)
+    @grid[pos[0]][pos[1]] = piece
+  end
 
   def convert(pos)
     letter = pos[0]
