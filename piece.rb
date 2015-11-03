@@ -5,13 +5,25 @@ class Piece
   SYMBOLS_BLACK = {king: "\u265A", queen: "\u265B", rook: "\u265C",
     bishop: "\u265D", knight: "\u265E", pawn: "\u265F"}
 
-  attr_reader :name, :color, :position, :board
+  attr_reader :name, :board
+  attr_accessor :color, :position
 
   def initialize(name, color, position, board)
     @name = name
     @color = color
     @position = position
     @board = board
+  end
+
+  def valid_moves
+    valid_moves = []
+    moves.each do |potential_move|
+      dup_board = @board.dup
+      dup_board.move!(@position, potential_move)
+      valid_moves << potential_move unless dup_board.in_check?(color)
+    end
+
+    valid_moves
   end
 
   def to_s
@@ -54,20 +66,18 @@ class SlidingPiece < Piece
       curr_y += 1 if delta_y && add_y
       curr_x -= 1 if delta_x && !add_x
       curr_y -= 1 if delta_y && !add_y
+      next unless curr_x.between?(0, 7) && curr_y.between?(0, 7)
 
       potential_pos = [curr_x, curr_y]
-      potential_piece = @board[[potential_pos[0], potential_pos[1]]]
-      unless potential_piece.nil?
-        if @color != potential_piece.color &&
-                curr_x.between?(0, 7) &&
-                curr_y.between?(0, 7)
-          potential_moves << potential_pos
-        end
-      end
-      if potential_piece.nil? && curr_x.between?(0, 7) && curr_y.between?(0, 7)
+      potential_piece = @board[potential_pos]
+
+      if potential_piece.nil?
         potential_moves << potential_pos
+      else
+        potential_moves << potential_pos if @color != potential_piece.color
+        break
       end
-      break unless potential_piece.nil?
+
     end
     potential_moves
   end
