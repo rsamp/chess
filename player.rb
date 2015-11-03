@@ -1,16 +1,19 @@
 require_relative 'display'
 
 class Player
-  def initialize(board)
-    @display = Display.new(board)
+  attr_reader :color
+
+  def initialize(color)
+    # @display = Display.new(board)
+    @color = color
   end
 
-  def move
-    result = nil
-    until result
-      @display.render
-      result = @display.get_input
-    end
-    result
-  end
+  # def move
+  #   result = nil
+  #   until result
+  #     @display.render
+  #     result = @display.get_input
+  #   end
+  #   result
+  # end
 end

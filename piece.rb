@@ -157,8 +157,6 @@ class Pawn < Piece
   def moves
     x, y = @position[0], @position[1]
     potential_moves = []
-    p possible_destinations(@color)
-
     blocked_after_first_step = true
 
     possible_destinations(@color).each_with_index do |coords, i|

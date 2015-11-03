@@ -1,7 +1,7 @@
 require_relative 'piece'
 
 class Board
-  attr_reader :grid
+  attr_reader :grid, :selected
 
   def initialize(default=true)
     @grid = Array.new(8) { Array.new(8) }
@@ -37,7 +37,7 @@ class Board
 
   def move(start, end_pos)
     curr_piece = @grid[start[0]][start[1]]
-    raise "No piece there" if curr_piece.nil?
+    # raise ArgumentError, "No piece there" if curr_piece.nil?
     move!(start, end_pos) if curr_piece.valid_moves.include?(end_pos)
   end
 
@@ -56,18 +56,6 @@ class Board
   def []=(pos, piece)
     @grid[pos[0]][pos[1]] = piece
   end
-
-  # def convert(pos)
-  #   letter = pos[0]
-  #   number = pos[1].to_i
-  #
-  #   alpha = {"a" => 0, "b" => 1, "c" => 2, "d" => 3, "e" => 4, "f" => 5,
-  #     "g" => 6, "h" => 7}
-  #
-  #   new_num = 8 - number
-  #
-  #   [[new_num],[alpha[letter]]].flatten
-  # end
 
   def in_check?(color)
     king = find_king(color)
@@ -150,9 +138,11 @@ class Board
 
   def place_piece(pos)
     move(@selected, pos)
+    @selected = nil
   end
 
   def game_over?
+    
     false
   end
 
