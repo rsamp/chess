@@ -1,4 +1,5 @@
 require_relative 'piece'
+require 'byebug'
 
 class Board
   attr_reader :grid, :selected
@@ -11,7 +12,6 @@ class Board
 
   def move(start, end_pos)
     curr_piece = self[start]
-    # raise ArgumentError, "No piece there" if curr_piece.nil?
     move!(start, end_pos) if curr_piece.valid_moves.include?(end_pos)
   end
 
@@ -60,12 +60,13 @@ class Board
   end
 
   def checkmate?(color)
-    if in_check?(color)
-      teammates = find_all_of_color(color)
-      teammates.each do |teammate|
-        return false unless teammate.valid_moves.empty?
-      end
+    return false unless in_check?(color)
+
+    teammates = find_all_of_color(color)
+    teammates.each do |teammate|
+      return false unless teammate.valid_moves.empty?
     end
+
     true
   end
 
@@ -87,6 +88,7 @@ class Board
   end
 
   def select_piece(pos)
+    # raise ArgumentError, "No piece there" if self[pos].nil?
     @selected = pos
   end
 
@@ -96,11 +98,14 @@ class Board
   end
 
   def game_over?
-
-    false
+    if checkmate?(:white) || checkmate?(:black)
+      true
+    else
+      false
+    end
   end
 
-  private
+  # private
 
   def populate
     # Populate top row (back row for black side)
@@ -132,7 +137,7 @@ class Board
     teammates = []
     @grid.each do |row|
       row.each do |square|
-        teammates << square unless square.nil? || color != square.color
+        teammates << square if !square.nil? && (color == square.color)
       end
     end
     teammates

@@ -17,6 +17,8 @@ class Game
       take_turn(@active_player)
       switch_player
     end
+    switch_player
+    puts "Checkmate. #{@active_player.color} wins!"
   end
 
   private
@@ -37,11 +39,11 @@ class Game
         start_pos = player.move
       end
       @board.select_piece(start_pos)
-      end_pos = player.move
-      @board.place_piece(end_pos)
     # rescue ArgumentError => e
     #   puts "Something went wrong: #{e.message}"
     #   retry
+      end_pos = player.move
+      @board.place_piece(end_pos)
     # end
   end
 end

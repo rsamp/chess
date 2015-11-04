@@ -15,7 +15,7 @@ class Display
 
   def render
     system("clear")
-    puts "Your turn #{@game.active_player.color}"
+    puts "Your turn, #{@game.active_player.color}"
     @board.grid.each_with_index do |row, i|
       row_string = ""
       row.each_with_index do |piece, j|
@@ -28,6 +28,9 @@ class Display
       end
       puts "#{row_string}\n"
     end
+    puts "In check" if @board.in_check?(@game.active_player.color)
+    puts "Checkmate" if @board.checkmate?(@game.active_player.color)
+    puts "Game over" if @board.game_over?
   end
 
   private
