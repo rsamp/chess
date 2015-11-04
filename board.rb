@@ -9,43 +9,17 @@ class Board
     @selected = nil
   end
 
-  def populate
-    # Populate top row (back row for black side)
-    @grid[0] = [Rook.new(:rook, :black, [0,0], self),
-                Knight.new(:knight, :black, [0,1], self),
-                Bishop.new(:bishop, :black, [0,2], self),
-                Queen.new(:queen, :black, [0,3], self),
-                King.new(:king, :black, [0,4], self),
-                Bishop.new(:bishop, :black, [0,5], self),
-                Knight.new(:knight, :black, [0,6], self),
-                Rook.new(:rook, :black, [0,7], self)]
-
-    # Populate rows of Pawns
-    @grid[1].map!.with_index {|square, i| square = Pawn.new(:pawn, :black, [1, i], self) }
-    @grid[6].map!.with_index {|square, i| square = Pawn.new(:pawn, :white, [6, i], self) }
-
-    # Populate bottom row (back row for white side)
-    @grid[7] = [Rook.new(:rook, :white, [7,0], self),
-                Knight.new(:knight, :white, [7,1], self),
-                Bishop.new(:bishop, :white, [7,2], self),
-                Queen.new(:queen, :white, [7,3], self),
-                King.new(:king, :white, [7,4], self),
-                Bishop.new(:bishop, :white, [7,5], self),
-                Knight.new(:knight, :white, [7,6], self),
-                Rook.new(:rook, :white, [7,7], self)]
-  end
-
   def move(start, end_pos)
-    curr_piece = @grid[start[0]][start[1]]
+    curr_piece = self[start]
     # raise ArgumentError, "No piece there" if curr_piece.nil?
     move!(start, end_pos) if curr_piece.valid_moves.include?(end_pos)
   end
 
   def move!(start, end_pos)
-    curr_piece = @grid[start[0]][start[1]]
-    @grid[start[0]][start[1]] = nil
-    @grid[end_pos[0]][end_pos[1]] = curr_piece
-    curr_piece.position = [end_pos[0], end_pos[1]]
+    curr_piece = self[start]
+    self[start] = nil
+    self[end_pos] = curr_piece
+    curr_piece.position = end_pos
   end
 
   def [](pos)
@@ -54,17 +28,19 @@ class Board
   end
 
   def []=(pos, piece)
-    @grid[pos[0]][pos[1]] = piece
+    x, y = pos
+    @grid[x][y] = piece
   end
 
   def in_check?(color)
     king = find_king(color)
     opponents_possible_moves = []
 
+    # potential flatten
     @grid.each do |row|
       row.each do |square|
         unless square.nil? || square.color == color
-          opponents_possible_moves += square.moves #unless square.color == color
+          opponents_possible_moves += square.moves
         end
       end
     end
@@ -76,7 +52,7 @@ class Board
     @grid.each do |row|
       row.each do |square|
         unless square.nil?
-          king = square if square.name == :king && color == square.color
+          king = square if square.class == King && color == square.color
         end
       end
     end
@@ -93,35 +69,13 @@ class Board
     true
   end
 
-  def find_all_of_color(color)
-    teammates = []
-    @grid.each do |row|
-      row.each do |square|
-        teammates << square unless square.nil? || color != square.color
-      end
-    end
-    teammates
-  end
-
   def dup
     board_dup = Board.new(false)
     @grid.each do |row|
       row.each do |square|
         unless square.nil?
-          name, color, position = square.name, square.color, square.position
-          if name == :rook
-            board_dup[position] = Rook.new(name, color, position, board_dup)
-          elsif name == :knight
-            board_dup[position] = Knight.new(name, color, position, board_dup)
-          elsif name == :bishop
-            board_dup[position] = Bishop.new(name, color, position, board_dup)
-          elsif name == :queen
-            board_dup[position] = Queen.new(name, color, position, board_dup)
-          elsif name == :king
-            board_dup[position] = King.new(name, color, position, board_dup)
-          elsif name == :pawn
-            board_dup[position] = Pawn.new(name, color, position, board_dup)
-          end
+          color, position = square.color, square.position
+          board_dup[position] = square.class.new(color, position, board_dup)
         end
       end
     end
@@ -142,8 +96,47 @@ class Board
   end
 
   def game_over?
-    
+
     false
   end
+
+  private
+
+  def populate
+    # Populate top row (back row for black side)
+    @grid[0] = [Rook.new(:black, [0,0], self),
+                Knight.new(:black, [0,1], self),
+                Bishop.new(:black, [0,2], self),
+                Queen.new(:black, [0,3], self),
+                King.new(:black, [0,4], self),
+                Bishop.new(:black, [0,5], self),
+                Knight.new(:black, [0,6], self),
+                Rook.new(:black, [0,7], self)]
+
+    # Populate rows of Pawns
+    @grid[1].map!.with_index {|square, i| square = Pawn.new(:black, [1, i], self) }
+    @grid[6].map!.with_index {|square, i| square = Pawn.new(:white, [6, i], self) }
+
+    # Populate bottom row (back row for white side)
+    @grid[7] = [Rook.new(:white, [7,0], self),
+                Knight.new(:white, [7,1], self),
+                Bishop.new(:white, [7,2], self),
+                Queen.new(:white, [7,3], self),
+                King.new(:white, [7,4], self),
+                Bishop.new(:white, [7,5], self),
+                Knight.new(:white, [7,6], self),
+                Rook.new(:white, [7,7], self)]
+  end
+
+  def find_all_of_color(color)
+    teammates = []
+    @grid.each do |row|
+      row.each do |square|
+        teammates << square unless square.nil? || color != square.color
+      end
+    end
+    teammates
+  end
+
 
 end

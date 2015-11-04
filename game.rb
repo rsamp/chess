@@ -7,18 +7,19 @@ class Game
   def initialize()
     @board = Board.new
     @display = Display.new(@board, self)
-    @player_1 = Player.new( color=:white )
-    @player_2 = Player.new( color=:black )
+    @player_1 = Player.new(color = :white, @display)
+    @player_2 = Player.new(color = :black, @display)
     @active_player = @player_1
   end
 
   def play
     until @board.game_over?
-      # @display.render
       take_turn(@active_player)
       switch_player
     end
   end
+
+  private
 
   def switch_player
     if @active_player == @player_1
@@ -30,27 +31,18 @@ class Game
 
   def take_turn(player)
     # begin
-      pos = move
-      curr_square = @board.grid[pos[0]][pos[1]]
+      start_pos = player.move
+      curr_square = @board[start_pos]
       until !curr_square.nil? && player.color == curr_square.color
-        pos = move
+        start_pos = player.move
       end
-      @board.select_piece(pos)
-      pos = move
-      @board.place_piece(pos)
+      @board.select_piece(start_pos)
+      end_pos = player.move
+      @board.place_piece(end_pos)
     # rescue ArgumentError => e
     #   puts "Something went wrong: #{e.message}"
     #   retry
     # end
-  end
-
-  def move
-    result = nil
-    until result
-      @display.render
-      result = @display.get_input
-    end
-    result
   end
 end
 

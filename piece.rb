@@ -5,11 +5,10 @@ class Piece
   SYMBOLS_BLACK = {king: "\u265A", queen: "\u265B", rook: "\u265C",
     bishop: "\u265D", knight: "\u265E", pawn: "\u265F"}
 
-  attr_reader :name, :board
+  attr_reader :board
   attr_accessor :color, :position
 
-  def initialize(name, color, position, board)
-    @name = name
+  def initialize(color, position, board)
     @color = color
     @position = position
     @board = board
@@ -31,9 +30,9 @@ class Piece
       "\s\s\s"
     else
       if color == :white
-        " #{SYMBOLS_WHITE[name]}  "
+        " #{SYMBOLS_WHITE[self.class.to_s.downcase.to_sym]}  "
       else
-        " #{SYMBOLS_BLACK[name]}  "
+        " #{SYMBOLS_BLACK[self.class.to_s.downcase.to_sym]}  "
       end
     end
   end
@@ -41,6 +40,7 @@ end
 
 class SlidingPiece < Piece
   def moves
+    # create move diffs class constant and iterate through
     potential_moves = []
     if move_dirs.include?(:axial)
       potential_moves += check_direction(true, false, true, false) +
@@ -66,7 +66,7 @@ class SlidingPiece < Piece
       curr_y += 1 if delta_y && add_y
       curr_x -= 1 if delta_x && !add_x
       curr_y -= 1 if delta_y && !add_y
-      next unless curr_x.between?(0, 7) && curr_y.between?(0, 7)
+      next unless @board.in_bounds?([curr_x, curr_y])
 
       potential_pos = [curr_x, curr_y]
       potential_piece = @board[potential_pos]
@@ -109,7 +109,7 @@ class SteppingPiece < Piece
     possible_destinations.each do |coords|
       temp_x = x + coords[0]
       temp_y = y + coords[1]
-      next unless temp_x.between?(0, 7) && temp_y.between?(0, 7)
+      next unless @board.in_bounds?([temp_x, temp_y])
 
       potential_piece = @board[[temp_x, temp_y]]
       unless potential_piece.nil?

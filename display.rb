@@ -11,7 +11,6 @@ class Display
     @board = board
     @cursor_pos = [0, 0]
     @game = game
-    # @selected = false
   end
 
   def render
@@ -30,6 +29,8 @@ class Display
       puts "#{row_string}\n"
     end
   end
+
+  private
 
   def colors_for(i, j)
     if [i, j] == @cursor_pos
@@ -51,9 +52,4 @@ class Display
     end
     { background: bg, color: :black }
   end
-end
-
-if __FILE__ == $PROGRAM_NAME
-  d = Display.new(Board.new)
-  d.render
 end
